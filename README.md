@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/scottberke/anagram-search.svg?token=epmpx7xuxypz89JRjqcG&branch=master)](https://travis-ci.com/scottberke/anagram-search)
 # Anagram Search
 
 ## Description

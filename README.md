@@ -12,7 +12,7 @@ Three endpoints currently exist:
 
 These endpoints are documented below with example usage.
 
-## Assumptions
+## Notes
 
 
 ## To Run Locally
@@ -21,16 +21,6 @@ Execute:
   $ git clone https://github.com/scottberke/anagram-search.git
   $ bundle
   $ rails s
-```
-
-To see available flags:
-```bash
-$ ./go-password-hasher -h
-Usage of ./go-password-hasher:
-  -delay int
-    	number of seconds to delay hash response (default 5)
-  -port int
-    	a port to start the server on (default 8080)
 ```
 
 To run tests:

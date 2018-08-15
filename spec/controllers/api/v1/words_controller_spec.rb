@@ -14,6 +14,7 @@ RSpec.describe Api::V1::WordsController, type: :request do
       post '/words.json', params: {"words" => words }
 
       key = words.sample.chars.sort_by(&:downcase).join
+
       expect(dictionary.anagrams).to have_key key
       expect(dictionary.anagrams[key].sort).to eq words.sort
     end

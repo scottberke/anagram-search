@@ -1,17 +1,16 @@
 class Api::V1::WordsController < ApplicationController
 
   def create
-    dict.ingest_from_array(params[:words])
+    Dictionary.instance.ingest_from_array(params[:words])
 
     head :created
   end
 
   def destroy
     if params.has_key?(:word)
-      key = params[:word].downcase.chars.sort.join
-      dict.anagrams[key].delete(params[:word]) if dict.anagrams.has_key?(key)
+      Dictionary.instance.delete_word(params[:word])
     else
-      dict.anagrams = Hash.new
+      Dictionary.instance.reset_dictionary
     end
 
     head :no_content

@@ -5,10 +5,10 @@ Rails.application.routes.draw do
     scope module: 'v1' do
       constraints lambda { |req| req.format == :json } do
         get     'anagrams/:word', to: 'anagrams#show'
-        post    'words'         , to: 'anagrams#create'
-        delete  'words/:word'   , to: 'anagrams#destroy'
-        delete  'words'         , to: 'anagrams#destroy'
-        get     'stats'         , to: 'anagrams#stats'
+        post    'words'         , to: 'words#create'
+        delete  'words/:word'   , to: 'words#destroy'
+        delete  'words'         , to: 'words#destroy'
+        get     'stats'         , to: 'stats#stats'
       end
     end
   end

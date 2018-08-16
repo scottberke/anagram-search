@@ -7,7 +7,7 @@ class Api::V1::WordsController < ApplicationController
   end
 
   def destroy
-    if params.has_key?(:word)
+    if params.has_key?(:word) && !params[:word].empty?
       Dictionary.instance.delete_word(params[:word])
     else
       Dictionary.instance.reset_dictionary

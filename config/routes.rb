@@ -10,6 +10,8 @@ Rails.application.routes.draw do
         delete  'words'         , to: 'words#destroy'
         get     'stats'         , to: 'stats#stats'
       end
+
+      get 'anagrams/check'      , to: 'anagrams#check'
     end
   end
 

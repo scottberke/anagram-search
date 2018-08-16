@@ -8,4 +8,10 @@ class Api::V1::AnagramsController < ApplicationController
     render json: { anagrams: anagrams.first(limit.to_i) }
   end
 
+  def check
+    words = JSON.parse(params.fetch(:words, [].to_s))
+    result = AnagramCheckService.all_anagrams?(words)
+    
+    render json: { words: words, all_anagrams?: result }
+  end
 end

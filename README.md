@@ -8,12 +8,21 @@ Three endpoints currently exist:
  2. GET [`/anagrams/:word.json`](#anagrams)
  3. DELETE [`/words/:word.json`](#words)
  4. DELETE [`/words.json`](#words)
- 5. GET [`/stats.json`](#stats)
+ 6. GET [`/stats.json`](#stats)
+ 7. GET [`/anagrams/check`](#anagrams-check)
 
 
 These endpoints are documented below with example usage.
 
 ## Notes
+
+- I chose to process the dictionary file on server load and store the anagrams in memory. I chose to do this to enable fast lookups with the tradeoff being that any anagrams added via the create endpoint wouldn't be persisted unless I updated that endpoint to also write them to the txt file. This could also be an issue if there were multiple instances of the server running due to anagram creation endpoint causing the instances to become out of sync. The size of the dictionary in memory was fairly trivial and shouldn't cause any issues.
+- Ingesting the file into memory should be around `O(n log n * m )` where `n` is the length of the longest word and `m` is the number of words in the txt file
+- Getting anagrams should be around `O(n log n)` where `n` is the length of the word. This is due to the hash lookups taking place in constant time and a sort needing to take place to get the key. There's added complexity for the set difference being performed on `[all anagrams for search word] - [search word]` but thats something along the lines of `O(n)` where `n` is the length of the array of `[all anagrams for search word]` (this complexity is what I understand after looking at the Ruby source code and seeing that its O(x+y) to do set difference with x and y being the length of the two arrays - in our case [search word] array length is constant or 1)
+- For the `AnagramCheckService` I chose to implement the check as I did to avoid sorting words and comparing the sorted version of a word to sorted versions of other words in the input. Sorting would have taken place in `O(n log n)` however, by using a key to count the letters in each word, we reduce the complexity to `O(n)` since we just have to take one pass through each word rather than sort each word. The tradeoff here is that space is added for storing the key arrays.
+
+***
+## Notes On Performance
 Initially, I wrote this up using Rails API but I started to think that since the project specified building an API allowing for **fast** searches, Rails most likely added unnecessary overhead. I had some time yesterday, so I went back and wrote up two more versions of the API, one with Ruby/Sinatra and another in Go (I've just recently started playing around with Go). I did some benchmark testing using Apache ab and, to no surprise, the Go version is the fastest. The Go version was also substantially faster when it came to ingesting the dictionary file.
 
 To run tests against each server, I ran the server for the corresponding version and executed:
@@ -63,10 +72,6 @@ Full Benchmark Stats:
 [Benchmark Go](./go_benchmark.md)
 
 ***
-Other aspects of the project worth noting:
-- I chose to process the dictionary file on server load and store the anagrams in memory. I chose to do this to enable fast lookups with the tradeoff being that any anagrams added via the create endpoint wouldn't be persisted unless I updated that endpoint to also write them to the txt file. This could also be an issue if there were multiple instances of the server running due to anagram creation endpoint causing the instances to become out of sync. The size of the dictionary in memory was fairly trivial and shouldn't cause any issues.
-- Ingesting the file into memory should be around `O(n log n * m )` where `n` is the length of the longest word and `m` is the number of words in the txt file
-- Getting anagrams should be around `O(n log n)` where `n` is the length of the longest word. This is due to the hash lookups taking place in constant time and the sort needing to take place to get the key. There's added complexity for the set difference being performed on `[all anagrams for search word] - [search word]` but that something along the lines of `O(n)` where `n` is the length of the array of `[all anagrams for search word]` (this complexity is what I understand after looking at the Ruby source code and seeing that its O(x+y) to do set difference with x and y being the length of the two arrays - in our case [search word] array length is constant or 1)
 
 ## To Run Locally
 Execute:
@@ -165,5 +170,25 @@ curl -X GET \
         "average": 9.56,
         "words_count": 235886
     }
+}
+```
+
+### Anagrams Check
+#### GET /anagrams/check?words=[]
+Used to check if all words in an array are anagrams of each other
+
+##### Request
+```bash
+curl -X GET \
+  'http://localhost:3000/anagrams/check?words=[%22read%22,%20%22dear%22]' \
+```
+##### Response 200 OK
+```json
+{
+    "words": [
+        "read",
+        "dear"
+    ],
+    "all_anagrams?": true
 }
 ```

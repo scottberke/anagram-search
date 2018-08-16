@@ -45,4 +45,35 @@ RSpec.describe Api::V1::AnagramsController, type: :request do
     end
   end
 
+  describe "GET #check" do
+    it "returns http success" do
+      get '/anagrams/check'
+
+      expect(response).to have_http_status(:success)
+    end
+
+    context "when all words are anagrams" do
+      it "checks if all words are anagrams" do
+        words = ["read", "dear", "dare"]
+        get "/anagrams/check?words=#{words}"
+
+        body = JSON.parse(response.body)
+
+        expect(body["words"]).to eq words
+        expect(body["all_anagrams?"]).to eq true
+      end
+    end
+
+    context "when all words are not anagrams" do
+      it "checks if all words are anagrams" do
+        words = ["read", "dear", "dare", "mate"]
+        get "/anagrams/check?words=#{words}"
+
+        body = JSON.parse(response.body)
+
+        expect(body["words"]).to eq words
+        expect(body["all_anagrams?"]).to eq false
+      end
+    end
+  end
 end

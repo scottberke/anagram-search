@@ -16,10 +16,11 @@ These endpoints are documented below with example usage.
 
 ## Notes
 
-- I chose to process the dictionary file on server load and store the anagrams in memory. I chose to do this to enable fast lookups with the tradeoff being that any anagrams added via the create endpoint wouldn't be persisted unless I updated that endpoint to also write them to the txt file. This could also be an issue if there were multiple instances of the server running due to anagram creation endpoint causing the instances to become out of sync. The size of the dictionary in memory was fairly trivial and shouldn't cause any issues.
+- I chose to process the dictionary file on server load (anagrams_dictionary.rb in initializers) and store the anagrams in memory. I chose to do this to enable fast lookups with the tradeoff being that any anagrams added via the create endpoint wouldn't be persisted unless I updated that endpoint to also write them to the txt file. This could also be an issue if there were multiple instances of the server running due to anagram creation endpoint causing the instances to become out of sync. The size of the dictionary in memory was fairly trivial and shouldn't cause any issues.
 - Ingesting the file into memory should be around `O(n log n * m )` where `n` is the length of the longest word and `m` is the number of words in the txt file
 - Getting anagrams should be around `O(n log n)` where `n` is the length of the word. This is due to the hash lookups taking place in constant time and a sort needing to take place to get the key. There's added complexity for the set difference being performed on `[all anagrams for search word] - [search word]` but thats something along the lines of `O(n)` where `n` is the length of the array of `[all anagrams for search word]` (this complexity is what I understand after looking at the Ruby source code and seeing that its O(x+y) to do set difference with x and y being the length of the two arrays - in our case [search word] array length is constant or 1)
 - For the `AnagramCheckService` I chose to implement the check as I did to avoid sorting words and comparing the sorted version of a word to sorted versions of other words in the input. Sorting would have taken place in `O(n log n)` however, by using a key to count the letters in each word, we reduce the complexity to `O(n)` since we just have to take one pass through each word rather than sort each word. The tradeoff here is that space is added for storing the key arrays.
+
 
 ***
 ## Notes On Performance
